@@ -37,3 +37,22 @@ export async function deleteLocalFiles(files: Array<string>) {
     fs.unlinkSync(file);
   }
 }
+
+// filterImageFromURL
+// helper function to validate image url
+// INPUTS
+//    url: string - an image ural url to an image file
+// RETURNS
+//    boolean true if url is a valid image url syntax else false
+
+export function isImageUrl(url: string) {
+  // check valid url
+  try{
+    new URL(url)
+  } catch (e) {
+    return false;
+  }
+  // check url belongs to an image
+  const regex = /.*\/.+\.(jpeg|jpg|png)$/g;
+  return url.match(regex) !== null;
+}
