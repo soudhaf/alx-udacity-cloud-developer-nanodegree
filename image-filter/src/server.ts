@@ -41,8 +41,11 @@ import {filterImageFromURL, deleteLocalFiles, isImageUrl} from './util/util';
     if(!isImageUrl(image_url))
       return res.status(400).send(image_url + ' is not a valid url of a supported image type')
 
-    res.send('image_url: ' + image_url)
-  } );
+    const saved_image: string = await filterImageFromURL(image_url);
+    return res.sendFile(saved_image, function(err){
+      deleteLocalFiles([saved_image])
+    })
+    } );
 
   // Start the Server
   app.listen( port, () => {
