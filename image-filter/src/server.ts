@@ -13,6 +13,10 @@ import {filterImageFromURL, deleteLocalFiles, isImageUrl} from './util/util';
   // Use the body parser middleware for post requests
   app.use(bodyParser.json());
 
+  app.get( "/", async (req: express.Request, res: express.Response) => {
+      res.sendStatus(200);
+    } );
+
   // @TODO1 IMPLEMENT A RESTFUL ENDPOINT
   // GET /filteredimage?image_url={{URL}}
   // endpoint to filter an image from a public url.
@@ -33,8 +37,8 @@ import {filterImageFromURL, deleteLocalFiles, isImageUrl} from './util/util';
   
   // Root Endpoint
   // Displays a simple message to the user
-  app.get( "/filteredimage", async ( req, res ) => {
-    const image_url: string =  req.query.image_url;
+  app.get( "/filteredimage", async (req: express.Request, res: express.Response) => {
+    const image_url: string = req.query.image_url;
     if(!image_url)
       return res.status(400).send('image_url is required')
 
@@ -42,7 +46,7 @@ import {filterImageFromURL, deleteLocalFiles, isImageUrl} from './util/util';
       return res.status(400).send(image_url + ' is not a valid url of a supported image type')
 
     const saved_image: string = await filterImageFromURL(image_url);
-    return res.sendFile(saved_image, function(err){
+    return res.status(200).sendFile(saved_image, function(err){
       deleteLocalFiles([saved_image])
     })
     } );

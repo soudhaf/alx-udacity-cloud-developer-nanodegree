@@ -1,5 +1,8 @@
 import fs from "fs";
+const axios = require('axios').default;
 import Jimp = require("jimp");
+import { AxiosResponse } from "axios";
+
 
 // filterImageFromURL
 // helper function to download, filter, and save the filtered image locally
@@ -11,18 +14,27 @@ import Jimp = require("jimp");
 export async function filterImageFromURL(inputURL: string): Promise<string> {
   return new Promise(async (resolve, reject) => {
     try {
-      const photo = await Jimp.read(inputURL);
+      // fix issue: Could not find MIME for Buffer <null>
+      // https://github.com/oliver-moran/jimp/issues/775#issuecomment-521938738
+      const photo = await axios({
+        method: 'get',
+        url: inputURL,
+        responseType: 'arraybuffer'
+      })
+      .then(function (response: AxiosResponse) {
+        return Jimp.read(response.data)
+      })
       const outpath =
         "/tmp/filtered." + Math.floor(Math.random() * 2000) + ".jpg";
       await photo
         .resize(256, 256) // resize
         .quality(60) // set JPEG quality
         .greyscale() // set greyscale
-        .write(__dirname + outpath, (img) => {
+        .write(__dirname + outpath, (img: any) => {
           resolve(__dirname + outpath);
         });
-    } catch (error) {
-      reject(error);
+    } catch (error){
+      reject(error)
     }
   });
 }
