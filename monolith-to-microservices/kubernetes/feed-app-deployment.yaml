@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feed-app
+  labels:
+    app: feed-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: feed-app
+  template:
+    metadata:
+      labels:
+        app: feed-app
+    spec:
+      containers:
+      - name: feed-app
+        image: $DOCKERHUB/udagram-api-feed:v1
+        ports:
+        - containerPort: 8080
+        env:
+          - name: POSTGRES_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: udagram-secrets
+                key: POSTGRES_USERNAME
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: udagram-secrets
+                key: POSTGRES_PASSWORD
+          - name: POSTGRES_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: udagram-env
+                key: POSTGRES_HOST
+          - name: POSTGRES_DB
+            valueFrom:
+              configMapKeyRef:
+                name: udagram-env
+                key: POSTGRES_DB
+          - name: URL
+            valueFrom:
+              configMapKeyRef:
+                name: udagram-env
+                key: URL
+          - name: AWS_REGION
+            valueFrom:
+              configMapKeyRef:
+                name: udagram-env
+                key: AWS_REGION
+          - name: AWS_PROFILE
+            valueFrom:
+              configMapKeyRef:
+                name: udagram-env
+                key: AWS_PROFILE
+          - name: AWS_BUCKET
+            valueFrom:
+              configMapKeyRef:
+                name: udagram-env
+                key: AWS_BUCKET
+          - name: JWT_SECRET
+            valueFrom:
+              configMapKeyRef:
+                name: udagram-env
+                key: JWT_SECRET
+        volumeMounts:
+        - name: aws-secret
+          mountPath: "/root/.aws/"
+          readOnly: true
+      volumes:
+      - name: aws-secret
+        secret:
+          secretName: aws-secret   
+

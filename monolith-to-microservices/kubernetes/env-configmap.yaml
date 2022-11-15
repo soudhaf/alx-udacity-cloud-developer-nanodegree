@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: udagram-env
+data:
+  POSTGRES_HOST: $POSTGRES_HOST
+  POSTGRES_DB: $POSTGRES_DB
+  URL: "http://localhost:8100"
+  AWS_REGION: "us-east-1"
+  AWS_PROFILE: "default"
+  AWS_BUCKET: $AWS_BUCKET
+  JWT_SECRET: $JWT_SECRET

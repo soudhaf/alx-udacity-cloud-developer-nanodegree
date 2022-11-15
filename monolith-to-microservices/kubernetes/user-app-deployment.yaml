@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-app
+  labels:
+    app: user-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-app
+  template:
+    metadata:
+      labels:
+        app: user-app
+    spec:
+      containers:
+      - name: user-app
+        image: $DOCKERHUB/udagram-api-user:v1
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: 200m
+          limits:
+            cpu: 400m
+        env:
+          - name: POSTGRES_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: udagram-secrets
+                key: POSTGRES_USERNAME
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: udagram-secrets
+                key: POSTGRES_PASSWORD
+          - name: POSTGRES_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: udagram-env
+                key: POSTGRES_HOST
+          - name: POSTGRES_DB
+            valueFrom:
+              configMapKeyRef:
+                name: udagram-env
+                key: POSTGRES_DB
+          - name: URL
+            valueFrom:
+              configMapKeyRef:
+                name: udagram-env
+                key: URL
+          - name: JWT_SECRET
+            valueFrom:
+              configMapKeyRef:
+                name: udagram-env
+                key: JWT_SECRET
